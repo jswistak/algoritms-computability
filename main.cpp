@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <iostream>
+#include <random>
 #include <set>
 #include <vector>
 
@@ -133,6 +135,43 @@ void BronKerbosch3(const vector<vector<int>> &G) {
     }
 }
 
+bool isClique(std::vector<std::vector<int>> &graph, std::vector<int> &nodes) {
+    for (int i = 0; i < nodes.size(); ++i) {
+        for (int j = i + 1; j < nodes.size(); ++j) {
+            if (graph[nodes[i]][nodes[j]] == 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+std::vector<int> monteCarloClique(std::vector<std::vector<int>> &graph, int iterations) {
+    std::vector<int> max_clique;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    int n = graph.size();
+
+    for (int i = 0; i < iterations; ++i) {
+        int sample_size = gen() % n + 1;
+        std::vector<int> sampled_nodes;
+
+        std::vector<int> node_list(n);
+        std::iota(node_list.begin(), node_list.end(), 0);
+
+        std::shuffle(node_list.begin(), node_list.end(), gen);
+        std::copy_n(node_list.begin(), sample_size, std::back_inserter(sampled_nodes));
+
+        if (isClique(graph, sampled_nodes)) {
+            if (sampled_nodes.size() > max_clique.size()) {
+                max_clique = sampled_nodes;
+            }
+        }
+    }
+
+    return std::sort(max_clique.begin(), max_clique.end()), max_clique;
+}
+
 int main() {
     int n;
     cin >> n;
@@ -148,11 +187,20 @@ int main() {
     BronKerbosch3(graph); // exponential
 
     cout << "Finished BronKerbosch3:\n";
+    std::sort(biggestCliqueBK.begin(), biggestCliqueBK.end());
     for (auto v : biggestCliqueBK) {
         cout << v << " ";
     }
     cout << endl;
-    // TODO: finding largest clique in polynomial time - Monte carlo aproximation
+
+    // Finding largest clique in polynomial time - Monte carlo aproximation
+    // TODO: add some approximation to the number of iterations - TBD
+    vector<int> largest_clique = monteCarloClique(graph, 1000); // approximate the number of iterations based on graph size to give optimal results
+    std::cout << "Largest clique Monte Carlo:\n";
+    for (int x : largest_clique) {
+        std::cout << x << " ";
+    }
+    std::cout << std::endl;
 
     // TODO: Finding largest common subgraph
     //
