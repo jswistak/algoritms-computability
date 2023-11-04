@@ -119,11 +119,6 @@ std::vector<int> monteCarloClique(std::vector<std::vector<int>> &graph, int iter
     return std::sort(max_clique.begin(), max_clique.end()), max_clique;
 }
 
-set<int> intersection(set<int> x, set<int> y) {
-    set<int> result;
-    set_intersection(x.begin(), x.end(), y.begin(), y.end(), inserter(result, result.end()));
-    return result;
-}
 
 set<int> neighbors(int v, const vector<vector<int>> &adj) {
     set<int> result;
@@ -136,7 +131,7 @@ set<int> neighbors(int v, const vector<vector<int>> &adj) {
 }
 
 vector<int> biggestCliqueBK;
-void BronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int>> &graph) {
+void BronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int>> graph) {
 
     if (P.empty() && X.empty()) {
         cout << "MAX CLIQUE: " << endl;
@@ -147,14 +142,16 @@ void BronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int
         return;
     }
 
-    for (int v : P) {
+    vector<int> verticesToProcess(P.begin(), P.end());
+    for (int v : verticesToProcess) {
+        if (P.find(v) == P.end()) continue; // Skip if v was already removed from P
+
         set<int> N = neighbors(v, graph);
         set<int> Rv = R;
         Rv.insert(v);
-        set<int> Pv = intersection(P, N);
-        set<int> Xv = intersection(X, N);
+        set<int> Pv; set_intersection(P.begin(), P.end(), N.begin(), N.end(), inserter(Pv, Pv.end()));
+        set<int> Xv; set_intersection(X.begin(), X.end(), N.begin(), N.end(), inserter(Xv, Xv.end()));
         BronKerbosch(Rv, Pv, Xv, graph);
-
         P.erase(v);
         X.insert(v);
     }
