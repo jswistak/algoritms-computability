@@ -133,15 +133,17 @@ set<int> neighbors(int v, const vector<vector<int>> &adj) {
     return result;
 }
 
-vector<int> biggestCliqueBK;
+set<int> biggestCliqueBK;
 void BronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int>> graph) {
 
     if (P.empty() && X.empty()) {
-        cout << "MAX CLIQUE: " << endl;
-        for (auto a : R) {
-            cout << a << " ";
+        if(R.size() > biggestCliqueBK.size()){
+            biggestCliqueBK = R;
         }
-        cout << "\n";
+//        for (auto a : R) {
+//            cout << a << " ";
+//        }
+//        cout << "\n";
         return;
     }
 
@@ -163,7 +165,6 @@ int main() {
     int n;
     cin >> n;
     vector<vector<int>> matrix = readMatrix(n);
-    cout << "Matrix" << endl;
     // Finging a clique in a graph
 
     // (it doesn't matter wheather it is a multigraph, because we can have 2 definitions) (K - clique definition TODO)
@@ -173,25 +174,20 @@ int main() {
     vector<vector<int>> graph = reduceAllValuesToOne(matrix, 1);
 
 
-    cout << "BronKerbosch:\n";
-
     set<int> R, P, X;
     for (int i = 0; i < graph.size(); ++i) {
         P.insert(i);
     }
-    cout << "Running\n";
     BronKerbosch(R, P, X, graph);
-    cout << "Not running\n";
-
-    std::sort(biggestCliqueBK.begin(), biggestCliqueBK.end());
+    cout << "BronKerbosch size - " << biggestCliqueBK.size() << " :\n";
     for (auto v : biggestCliqueBK) {
         cout << v << " ";
     }
-
+    cout << "\n";
     // Finding largest clique in polynomial time - Monte carlo aproximation
-    vector<int> largest_clique = monteCarloClique(graph, 500000 * approximateIterations(graph));
+    vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
     // 0 2 8 13 16 17 21 25 26 31 34 36 39
-    std::cout << "Largest clique Monte Carlo:\n";
+    std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
     cout << "Size: " << largest_clique.size() << endl;
     for (int x : largest_clique) {
         std::cout << x << " ";
