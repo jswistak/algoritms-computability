@@ -25,7 +25,10 @@ vector<vector<int>> reduceAllValuesToOne(vector<vector<int>> multigraph, int k =
     for (int i = 0; i < multigraph.size(); i++) {
         vector<int> row;
         for (int j = 0; j < multigraph.size(); j++) {
-            if (multigraph[i][j] >= k) {
+            if(i == j){
+                row.push_back(0);
+            }
+            else if (multigraph[i][j] >= k) {
                 row.push_back(1);
             } else {
                 row.push_back(0);
