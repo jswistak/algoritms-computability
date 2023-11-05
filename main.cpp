@@ -91,7 +91,7 @@ int approximateIterations(const std::vector<std::vector<int>> &graph) {
     for (int i = 0; i < n; i++) {
         edgeCount += graph[i].size();
     }
-    const int scaleFactor = 15;
+    const int scaleFactor = 200;
 
     return (edgeCount / (n + 1)) * scaleFactor;
 }
@@ -162,6 +162,7 @@ void BronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int
     }
 }
 int main() {
+    const int K_CLIQUE = 1;
     int n;
     cin >> n;
     vector<vector<int>> matrix = readMatrix(n);
@@ -171,26 +172,32 @@ int main() {
     // 1. Find the biggest number of edges and replace it with eadge otherwise skip.
     // 2. If there is more edges between the same vertices we will replace multiple egdes with one.
 
-    vector<vector<int>> graph = reduceAllValuesToOne(matrix, 1);
+    vector<vector<int>> graph = reduceAllValuesToOne(matrix, K_CLIQUE);
 
-
-    set<int> R, P, X;
-    for (int i = 0; i < graph.size(); ++i) {
-        P.insert(i);
-    }
-    BronKerbosch(R, P, X, graph);
-    cout << "BronKerbosch size - " << biggestCliqueBK.size() << " :\n";
-    for (auto v : biggestCliqueBK) {
-        cout << v << " ";
-    }
-    cout << "\n";
-    // Finding largest clique in polynomial time - Monte carlo aproximation
-    vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
-    // 0 2 8 13 16 17 21 25 26 31 34 36 39
-    std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
-    cout << "Size: " << largest_clique.size() << endl;
-    for (int x : largest_clique) {
-        std::cout << x << " ";
+    // Finding largest clique
+//    {
+//        set<int> R, P, X;
+//        for (int i = 0; i < graph.size(); ++i) {
+//            P.insert(i);
+//        }
+//        BronKerbosch(R, P, X, graph);
+//        cout << "BronKerbosch size - " << biggestCliqueBK.size() << " :\n";
+//        for (auto v: biggestCliqueBK) {
+//            cout << v << " ";
+//        }
+//        cout << "\n";
+//        // Finding largest clique in polynomial time - Monte carlo aproximation
+//        vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
+//        // 0 2 8 13 16 17 21 25 26 31 34 36 39
+//        std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
+//        cout << "Size: " << largest_clique.size() << endl;
+//        for (int x: largest_clique) {
+//            std::cout << x << " ";
+//        }
+//    }
+    //Finding maximal common subgraph
+    {
+        //Assuming each graph is a connected graph!
     }
     // TODO: Homenda's request neighbourhood matrix with marked max Clique
     // TODO: Progress bar in monte carlo - TBD
