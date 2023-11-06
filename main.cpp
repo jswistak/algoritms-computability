@@ -3,6 +3,7 @@
 #include <random>
 #include <set>
 #include <vector>
+#include <unordered_set>
 
 using namespace std;
 
@@ -161,6 +162,75 @@ void BronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int
         X.insert(v);
     }
 }
+
+
+
+////////////////////////////
+// MAXIMAL COMMON SUBGRAPH //
+////////////////////////////
+unordered_map<int, int> vertexMap;
+unordered_set<int> mappedVertices1;
+unordered_set<int> mappedVertices2;
+vector<pair<int,int>> largestMapping;
+void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vector<vector<int>> &graph2, vector<pair<int,int>> &edges1, vector<pair<int,int>> &edges2){
+    for(auto element: vertexMap){
+        for(int v1 = 0; v1 < graph1[element.first].size(); ++v1){ //iterate over all neighbors of v1 not yet mapped
+            if(mappedVertices1.find(v1) != mappedVertices1.end()) continue;
+            if(graph1[element.first][v1] == 0) continue;
+
+            mappedVertices1.insert(v1);
+            for(int v2 = 0; v2 < graph2[evertexMaplement.second].size(); ++v2){ //iterate over all neighbors of v2 not yet mapped
+                if(mappedVertices2.find(v2) != mappedVertices2.end()) continue;
+                if(graph2[element.second][v2] == 0) continue;
+
+                mappedVertices2.insert(v2);
+                //We can try to map v1 to v2
+                vertexMap[v1] = v2;
+                maximalCommonSubgraphProcess(graph1, graph2, edges1, edges2);
+
+                vertexMap.erase(v1);
+                mappedVertices2.erase(v2);
+
+            }
+            mappedVertices1.erase(v1);
+            //Debug stack overflow error here
+
+        }
+    }
+    cout << "Possible mapping: \n";
+    vector<pair<int,int>> edges;
+    for(auto pair: vertexMap){
+        cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
+        edges.push_back({pair.first, pair.second});
+    }
+    if(edges.size() > largestMapping.size()){
+        largestMapping = edges;
+    }
+    //try to save as the biggest common subgraph
+}
+void maximalCommonSubgraph(const vector<vector<int>> &graph1, const vector<vector<int>> &graph2) {
+    for(int i = 0; i < graph1.size(); ++i){
+        for(int j = 0; j < graph2.size(); ++j){
+            vertexMap[i] = j;
+            mappedVertices1.insert(i);
+            mappedVertices2.insert(j);
+            vector<pair<int,int>> edges1;
+            vector<pair<int,int>> edges2;
+            maximalCommonSubgraphProcess(graph1, graph2, edges1, edges2);
+            mappedVertices1.erase(i);
+            mappedVertices2.erase(j);
+            vertexMap.erase(i);
+        }
+    }
+}
+
+
+
+
+
+
+
+
 int main() {
     const int K_CLIQUE = 1;
     int n;
@@ -195,9 +265,17 @@ int main() {
 //            std::cout << x << " ";
 //        }
 //    }
+
+
+    cin >> n;
+    vector<vector<int>> matrix2 = readMatrix(n);
+
+    vector<vector<int>> graph2 = reduceAllValuesToOne(matrix2, K_CLIQUE);
+
     //Finding maximal common subgraph
     {
         //Assuming each graph is a connected graph!
+        maximalCommonSubgraph(graph, graph2);
     }
     // TODO: Homenda's request neighbourhood matrix with marked max Clique
     // TODO: Progress bar in monte carlo - TBD
