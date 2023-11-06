@@ -179,7 +179,7 @@ void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vecto
             if(graph1[element.first][v1] == 0) continue;
 
             mappedVertices1.insert(v1);
-            for(int v2 = 0; v2 < graph2[evertexMaplement.second].size(); ++v2){ //iterate over all neighbors of v2 not yet mapped
+            for(int v2 = 0; v2 < graph2[element.second].size(); ++v2){ //iterate over all neighbors of v2 not yet mapped
                 if(mappedVertices2.find(v2) != mappedVertices2.end()) continue;
                 if(graph2[element.second][v2] == 0) continue;
 
@@ -198,13 +198,13 @@ void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vecto
         }
     }
     cout << "Possible mapping: \n";
-    vector<pair<int,int>> edges;
+    vector<pair<int,int>> mapping;
     for(auto pair: vertexMap){
         cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
-        edges.push_back({pair.first, pair.second});
+        mapping.push_back({pair.first, pair.second});
     }
-    if(edges.size() > largestMapping.size()){
-        largestMapping = edges;
+    if(mapping.size() > largestMapping.size()){
+        largestMapping = mapping;
     }
     //try to save as the biggest common subgraph
 }
@@ -266,6 +266,8 @@ int main() {
 //        }
 //    }
 
+    // TODO: Homenda's request neighbourhood matrix with marked max Clique
+    // TODO: Progress bar in monte carlo - TBD
 
     cin >> n;
     vector<vector<int>> matrix2 = readMatrix(n);
@@ -276,9 +278,13 @@ int main() {
     {
         //Assuming each graph is a connected graph!
         maximalCommonSubgraph(graph, graph2);
+
+        cout << "Largest common subgraph of size - " << largestMapping.size() << " : \n";
+        for(auto pair: largestMapping){
+            cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
+        }
     }
-    // TODO: Homenda's request neighbourhood matrix with marked max Clique
-    // TODO: Progress bar in monte carlo - TBD
+
 
     std::cout << std::endl;
 
