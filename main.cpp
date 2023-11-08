@@ -4,9 +4,43 @@
 #include <set>
 #include <vector>
 #include <unordered_set>
+#include <iterator>
+
 
 using namespace std;
 
+const std::string RED = "\033[31m";      // Red
+const std::string GREEN = "\033[32m";    // Green
+const std::string YELLOW = "\033[33m";   // Yellow
+const std::string BLUE = "\033[34m";     // Blue
+const std::string MAGENTA = "\033[35m";  // Magenta
+const std::string CYAN = "\033[36m";     // Cyan
+const std::string RESET = "\033[0m";     // Reset to default color
+
+
+// Function to print the adjacency matrix with the clique elements colored
+void printColoredAdjacencyMatrix(const std::vector<std::vector<int>>& matrix, const std::set<int>& largest_clique) {
+
+    std::cout << "\n" << RESET; // Reset text color to default
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        for (size_t j = 0; j < matrix[i].size(); ++j) {
+            // Check if both nodes are in the largest clique
+            if (i != j && largest_clique.find(i) != largest_clique.end() && largest_clique.find(j) != largest_clique.end()) {
+                std::cout << RED; // Set text color to red for clique elements
+            }
+            else {
+                std::cout << RESET; // Reset text color to default
+            }
+
+            // Print the matrix element
+            std::cout << matrix[i][j] << " ";
+
+
+        }
+        std::cout << std::endl; // Newline after each row
+    }
+    std::cout << RESET; // Reset text color to default
+}
 vector<vector<int>> readMatrix(int n) {
     vector<vector<int>> matrix;
     int value;
@@ -197,10 +231,10 @@ void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vecto
 
         }
     }
-    cout << "Possible mapping: \n";
+    //cout << "Possible mapping: \n";
     vector<pair<int,int>> mapping;
     for(auto pair: vertexMap){
-        cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
+        //cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
         mapping.push_back({pair.first, pair.second});
     }
     if(mapping.size() > largestMapping.size()){
@@ -233,41 +267,50 @@ void maximalCommonSubgraph(const vector<vector<int>> &graph1, const vector<vecto
 
 int main() {
     const int K_CLIQUE = 1;
+    const int L_MAXIMAL_COMMON_SUBGRAPH = 2;
+    const int TRIES = 3;
     int n;
     cin >> n;
     vector<vector<int>> matrix = readMatrix(n);
-    // Finging a clique in a graph
+    // Finding a clique in a graph
 
-    // (it doesn't matter wheather it is a multigraph, because we can have 2 definitions) (K - clique definition TODO)
-    // 1. Find the biggest number of edges and replace it with eadge otherwise skip.
-    // 2. If there is more edges between the same vertices we will replace multiple egdes with one.
+    // (it doesn't matter whether it is a multigraph, because we can have 2 definitions) (K - clique definition TODO)
+    // 1. Find the biggest number of edges and replace it with edge otherwise skip.
+    // 2. If there is more edges between the same vertices we will replace multiple edges with one.
 
     vector<vector<int>> graph = reduceAllValuesToOne(matrix, K_CLIQUE);
 
     // Finding largest clique
-//    {
-//        set<int> R, P, X;
-//        for (int i = 0; i < graph.size(); ++i) {
-//            P.insert(i);
-//        }
-//        BronKerbosch(R, P, X, graph);
-//        cout << "BronKerbosch size - " << biggestCliqueBK.size() << " :\n";
-//        for (auto v: biggestCliqueBK) {
-//            cout << v << " ";
-//        }
-//        cout << "\n";
-//        // Finding largest clique in polynomial time - Monte carlo aproximation
-//        vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
-//        // 0 2 8 13 16 17 21 25 26 31 34 36 39
-//        std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
-//        cout << "Size: " << largest_clique.size() << endl;
-//        for (int x: largest_clique) {
-//            std::cout << x << " ";
-//        }
-//    }
+    {
+        set<int> R, P, X;
+        for (int i = 0; i < graph.size(); ++i) {
+            P.insert(i);
+        }
+        BronKerbosch(R, P, X, graph);
 
-    // TODO: Homenda's request neighbourhood matrix with marked max Clique
-    // TODO: Progress bar in monte carlo - TBD
+
+        cout << "BronKerbosch size - " << biggestCliqueBK.size() << " :\n";
+        cout << CYAN;
+        for (auto v: biggestCliqueBK) {
+            cout << v << " ";
+        }
+        cout << RESET;
+        cout << "\n";
+        // Finding largest clique in polynomial time - Monte carlo aproximation
+        vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
+        // 0 2 8 13 16 17 21 25 26 31 34 36 39
+        std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
+        cout << BLUE;
+        for (int x: largest_clique) {
+            std::cout << x << " ";
+        }
+        cout << RESET << "\n";
+        std::set<int> setLargestClique(largest_clique.begin(), largest_clique.end());
+        printColoredAdjacencyMatrix(graph, setLargestClique);
+
+    }
+
+
 
     cin >> n;
     vector<vector<int>> matrix2 = readMatrix(n);
@@ -280,9 +323,18 @@ int main() {
         maximalCommonSubgraph(graph, graph2);
 
         cout << "Largest common subgraph of size - " << largestMapping.size() << " : \n";
+        cout << CYAN;
         for(auto pair: largestMapping){
-            cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
+            cout << pair.first << " -> " << pair.second  << "\n";
         }
+        cout << RESET;
+
+
+        //Longest path in a graph or some common BFS or DFS //TBD
+        //approxCommonSubgraph(graph, graph2, TRIES);
+
+
+        //Distance between 2 graphs TBD
     }
 
 
