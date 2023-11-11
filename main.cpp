@@ -19,13 +19,13 @@ const std::string RESET = "\033[0m";     // Reset to default color
 
 
 // Function to print the adjacency matrix with the clique elements colored
-void printColoredAdjacencyMatrix(const std::vector<std::vector<int>>& matrix, const std::set<int>& largest_clique) {
+void printColoredAdjacencyMatrix(const std::vector<std::vector<int>>& matrix, const std::set<int>& largest_clique, bool colorTheSame = false) {
 
     std::cout << "\n" << RESET; // Reset text color to default
     for (size_t i = 0; i < matrix.size(); ++i) {
         for (size_t j = 0; j < matrix[i].size(); ++j) {
             // Check if both nodes are in the largest clique
-            if (i != j && largest_clique.find(i) != largest_clique.end() && largest_clique.find(j) != largest_clique.end() and matrix[i][j] > 0) {
+            if ((colorTheSame || i != j) && largest_clique.find(i) != largest_clique.end() && largest_clique.find(j) != largest_clique.end() and matrix[i][j] > 0) {
                 std::cout << RED; // Set text color to red for clique elements
             }
             else {
@@ -149,7 +149,7 @@ std::vector<int> monteCarloClique(std::vector<std::vector<int>> &graph, int iter
 
         if (isClique(graph, sampled_nodes)) {
             if (sampled_nodes.size() > max_clique.size()) {
-                max_clique = sampled_nodes; //TODO check if there is a clique with more edges than the current max clique
+                max_clique = sampled_nodes;
             }
         }
     }
@@ -206,8 +206,9 @@ void bronKerbosch(set<int> &R, set<int> &P, set<int> &X, const vector<vector<int
 unordered_map<int, int> vertexMap;
 unordered_set<int> mappedVertices1;
 unordered_set<int> mappedVertices2;
-vector<pair<int,int>> largestMapping;
-void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vector<vector<int>> &graph2, vector<pair<int,int>> &edges1, vector<pair<int,int>> &edges2){
+vector<vector<pair<int,int>>> largestMappings;
+
+void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vector<vector<int>> &graph2, vector<pair<int,int>> &edges1, vector<pair<int,int>> &edges2) {
     for(auto element: vertexMap){
         for(int v1 = 0; v1 < graph1[element.first].size(); ++v1){ //iterate over all neighbors of v1 not yet mapped
             if(mappedVertices1.find(v1) != mappedVertices1.end()) continue;
@@ -238,8 +239,11 @@ void maximalCommonSubgraphProcess(const vector<vector<int>> &graph1, const vecto
         //cout << pair.first + 1 << " - >" << pair.second + 1 << "\n";
         mapping.push_back({pair.first, pair.second});
     }
-    if(mapping.size() > largestMapping.size()){
-        largestMapping = mapping; //TODO find largest mapping by number of edges
+    if(largestMappings.size() == 0 || mapping.size() > largestMappings[0].size()){
+        largestMappings.clear();
+        largestMappings.push_back(mapping);
+    } else if(mapping.size() == largestMappings[0].size()){
+        largestMappings.push_back(mapping);
     }
     //try to save as the biggest common subgraph
 }
@@ -287,11 +291,13 @@ void maximalCommonSubgraphProcessHeuristic(const vector<vector<int>> &graph1, co
     n1 = subtract(n1, mappedVertices1);
     n2 = subtract(n2, mappedVertices2);
     if(n1.size() == 0 || n2.size() == 0){
-        if(vertexMap.size() > largestMapping.size()){
-            largestMapping.clear();
+        if(largestMappings.empty() || vertexMap.size() > largestMappings[0].size()){
+            largestMappings.clear();
+            vector<pair<int,int>> tmp;
             for(auto element: vertexMap){
-                largestMapping.push_back({element.first, element.second});
+                tmp.push_back({element.first, element.second});
             }
+            largestMappings.push_back(tmp);
         }
         return;
     };
@@ -311,11 +317,13 @@ void maximalCommonSubgraphProcessHeuristic(const vector<vector<int>> &graph1, co
         vertexMap[v] = v2_random;
         maximalCommonSubgraphProcessHeuristic(graph1, graph2, v, v2_random);
     }
-    if(vertexMap.size() > largestMapping.size()){
-        largestMapping.clear();
-        for(auto element: vertexMap){
-            largestMapping.push_back({element.first, element.second});
-        }
+    if(largestMappings.empty() || vertexMap.size() > largestMappings[0].size()){
+        largestMappings.clear();
+            vector<pair<int,int>> tmp;
+            for(auto element: vertexMap){
+                tmp.push_back({element.first, element.second});
+            }
+            largestMappings.push_back(tmp);
     }
 
 }
@@ -338,6 +346,48 @@ void approxCommonSubgraph(const vector<vector<int>> &graph1, const vector<vector
     }
 }
 
+int getEdges(const vector<pair<int, int>> mappingP, const vector<vector<int>> &graph, const vector<vector<int>> &graph2){
+    int edges = 0;
+    for(auto mapping: mappingP){
+        for(auto mapping2: mappingP){
+            //if(mapping.first == mapping2.first) continue;
+            if(graph[mapping.first][mapping2.first] > 0 && graph2[mapping.second][mapping2.second] > 0){
+                edges += min(graph[mapping.first][mapping2.first], graph2[mapping.second][mapping2.second]);
+            }
+        }
+    }
+    return edges;
+}
+vector<pair<int, int>> getLargestMapping(const vector<vector<int>> &graph, const vector<vector<int>> &graph2){
+    vector<pair<int, int>> largestMapping;
+    int edges = 0;
+    //cout << "largestMappings.size(): " << largestMappings.size() << endl;
+    for(const auto& mapping: largestMappings){
+        int tmp = getEdges(mapping, graph, graph2);
+
+        if(tmp > edges){
+            //cout << "tmp: " << tmp << endl;
+            edges = tmp;
+            largestMapping = mapping;
+        }
+    }
+    return largestMapping;
+}
+int graphEdges(const vector<vector<int>> &graph){
+    int edges = 0;
+    for(int i = 0; i < graph.size(); ++i){
+        for(int j = 0; j < graph.size(); ++j){
+            edges += graph[i][j];
+        }
+    }
+    return edges;
+}
+pair<int, int> distanceBetweenGraphs(const vector<vector<int>> &graph1, const vector<vector<int>> &graph2, const vector<pair<int, int>> &mapping){
+
+    int distance_v = graph1.size() + graph2.size() - 2 * mapping.size();
+    int distance_e = graphEdges(graph1) + graphEdges(graph2) - 2 * getEdges(mapping, graph1, graph2);
+    return {distance_v, distance_e};
+}
 
 int main() {
     const int K_CLIQUE = 1;
@@ -372,7 +422,6 @@ int main() {
         cout << "\n";
         // Finding largest clique in polynomial time - Monte carlo aproximation
         vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
-        // 0 2 8 13 16 17 21 25 26 31 34 36 39
         std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
         cout << BLUE;
         for (int x: largest_clique) {
@@ -393,44 +442,46 @@ int main() {
 
     // L-connectivity - it needs to be able to have at least L edges between each pair of vertices
     vector<vector<int>> graph2 = reduceAllValuesToOne(matrix2, K_CLIQUE);
-
+    cout << "L-connectivity: \n";
     //Finding maximal common subgraph
     {
         vertexMap.clear();
         mappedVertices1.clear();
         mappedVertices2.clear();
-        largestMapping.clear();
+        largestMappings.clear();
 
         //Assuming each graph is a connected graph!
         maximalCommonSubgraph(graph, graph2);
 
-        cout << "Largest common subgraph of size - " << largestMapping.size() << " : \n";
+        cout << "Largest common subgraph of size - " << largestMappings[0].size() << " : \n";
         cout << CYAN;
         set<int> largestMappingG1;
-        for(auto pair: largestMapping){
+        vector<pair<int,int>> tmp = getLargestMapping(graph, graph2);
+        for(auto pair: tmp){
             cout << pair.first << " -> " << pair.second  << "\n";
             largestMappingG1.insert(pair.first);
         }
         cout << RESET;
-        printColoredAdjacencyMatrix(matrix, largestMappingG1);
+        cout << "Adjacency matrix of largest common subgraph (exp):\n";
+        printColoredAdjacencyMatrix(matrix, largestMappingG1, true);
 
 
         vertexMap.clear();
         mappedVertices1.clear();
         mappedVertices2.clear();
-        largestMapping.clear();
-        approxCommonSubgraph(graph, graph2); //Using DFS on 2 graphs simultaneously
-        for(auto pair: largestMapping){
-            cout << pair.first << " -> " << pair.second  << "\n";
-        }
+        largestMappings.clear();
 
-        //TODO: Distance between 2 graphs TBD
+        approxCommonSubgraph(graph, graph2); //Using DFS on 2 graphs simultaneously
+        cout << "Largest common subgraph of size - " << largestMappings[0].size() << " :\n" << BLUE;
+        for(auto pair: largestMappings[0]){
+            cout << pair.first << " -> " << pair.second  << "\n";
+        }cout << RESET;
+        cout << "Distance between 2 graphs: ";
+        pair<int,int> distance = distanceBetweenGraphs(matrix, matrix2, tmp);
+        cout << "("<< distance.first << " , " << distance.second << ")\n";
     }
 
 
     std::cout << std::endl;
-
-    // TODO: Finding largest common subgraph
-    // L-connectivity(?)
     return 0;
 }
