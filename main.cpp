@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_set>
 #include <iterator>
-
+#include <cstdlib>
 
 using namespace std;
 
@@ -389,9 +389,24 @@ pair<int, int> distanceBetweenGraphs(const vector<vector<int>> &graph1, const ve
     return {distance_v, distance_e};
 }
 
+int loadIntEnv(const char* env_var_name, int default_value) {
+    const char* env_var = getenv(env_var_name);
+
+    if (env_var != nullptr) {
+        // Convert to integer
+        int value = std::stoi(env_var);
+        std::cout << "Environment variable " << env_var_name << " set to value: " << value << std::endl;
+        return value;
+    } else {
+        std::cerr << "Environment variable not set" << std::endl;
+        return default_value;
+    }
+}
+
 int main() {
-    const int K_CLIQUE = 1;
-    const int L_CONN = 3;
+
+    const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
+    const int L_CONN = loadIntEnv("L_CONN", 2);
     int test_cases;
     cin >> test_cases;
     for(int test_case = 0; test_case < test_cases; test_case++) {
