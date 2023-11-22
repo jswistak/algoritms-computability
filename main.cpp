@@ -391,10 +391,10 @@ pair<int, int> distanceBetweenGraphs(const vector<vector<int>> &graph1, const ve
 
 int main() {
     const int K_CLIQUE = 1;
-    const int TRIES = 3;
+    const int L_CONN = 3;
     int test_cases;
     cin >> test_cases;
-    for(int i = 0; i < test_cases; i++) {
+    for(int test_case = 0; test_case < test_cases; test_case++) {
         int n;
         cin >> n;
         vector<vector<int>> matrix = readMatrix(n);
@@ -443,7 +443,8 @@ int main() {
         vector<vector<int>> matrix2 = readMatrix(n);
 
         // L-connectivity - it needs to be able to have at least L edges between each pair of vertices
-        vector<vector<int>> graph2 = reduceAllValuesToOne(matrix2, K_CLIQUE);
+        vector<vector<int>> graph2 = reduceAllValuesToOne(matrix2, L_CONN);
+        graph = reduceAllValuesToOne(matrix, L_CONN);
         cout << "L-connectivity: \n";
         //Finding maximal common subgraph
         {
