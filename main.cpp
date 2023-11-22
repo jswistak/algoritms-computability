@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <iterator>
 #include <cstdlib>
+#include <chrono>
+
 
 using namespace std;
 
@@ -428,8 +430,11 @@ int main() {
             for (int i = 0; i < graph.size(); ++i) {
                 P.insert(i);
             }
+            auto start = std::chrono::high_resolution_clock::now();
             bronKerbosch(R, P, X, graph);
-
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> duration = end - start;
+            std::cout << "bronKerbosch time: " << duration.count() << " ms\n";
 
             cout << "\nBronKerbosch size - " << biggestCliqueBK.size() << " :\n";
             cout << CYAN;
@@ -439,7 +444,12 @@ int main() {
             cout << RESET;
             cout << "\n";
             // Finding largest clique in polynomial time - Monte carlo aproximation
+            start = std::chrono::high_resolution_clock::now();
             vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
+            end = std::chrono::high_resolution_clock::now();
+            duration = end - start;
+            std::cout << "monteCarloClique time: " << duration.count() << " ms\n";
+
             std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n";
             cout << BLUE;
             for (int x: largest_clique) {
@@ -469,7 +479,11 @@ int main() {
             largestMappings.clear();
 
             //Assuming each graph is a connected graph!
+            auto start = std::chrono::high_resolution_clock::now();
             maximalCommonSubgraph(graph, graph2);
+            auto end = std::chrono::high_resolution_clock::now();
+            auto duration = end - start;
+            std::cout << "maximalCommonSubgraph time: " << duration.count() << " ms\n";
 
             cout << "Largest common subgraph of size - " << largestMappings[0].size() << " : \n";
             cout << CYAN;
@@ -488,8 +502,11 @@ int main() {
             mappedVertices1.clear();
             mappedVertices2.clear();
             largestMappings.clear();
-
+            start = std::chrono::high_resolution_clock::now();
             approxCommonSubgraph(graph, graph2); //Using DFS on 2 graphs simultaneously
+            end = std::chrono::high_resolution_clock::now();
+            duration = end - start;
+            std::cout << "approxCommonSubgraph time: " << duration.count() << " ms\n";
             cout << "Largest common subgraph of size - " << largestMappings[0].size() << " :\n" << BLUE;
             for (auto pair: largestMappings[0]) {
                 cout << pair.first << " -> " << pair.second << "\n";
