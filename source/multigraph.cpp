@@ -62,39 +62,6 @@ vector<vector<int>> reduceAllValuesToOne(vector<vector<int>> multigraph, int k) 
     return graph;
 }
 
-bool edgeExists(int u, int v, const vector<vector<int>> &G) {
-    return G[u][v] > 0;
-}
-
-int findPivot(const set<int> &P, const set<int> &X, const vector<vector<int>> &adjMatrix) {
-    int maxDegree = -1;
-    int pivot = -1;
-
-    auto checkDegree = [&](int vertex) {
-        int degree = 0;
-        for (int i = 0; i < adjMatrix[vertex].size(); ++i) {
-            degree += adjMatrix[vertex][i];
-        }
-        if (degree > maxDegree) {
-            maxDegree = degree;
-            pivot = vertex;
-        }
-    };
-
-    // Check each vertex in P
-    for (const auto &vertex : P) {
-        checkDegree(vertex);
-    }
-
-    // Check each vertex in X
-    for (const auto &vertex : X) {
-        checkDegree(vertex);
-    }
-
-    return pivot;
-}
-
-
 bool isClique(vector<vector<int>> &graph, vector<int> &nodes) {
     for (int i = 0; i < nodes.size(); ++i) {
         for (int j = i + 1; j < nodes.size(); ++j) {
@@ -250,7 +217,7 @@ void maximalCommonSubgraph(const vector<vector<int>> &graph1, const vector<vecto
         }
     }
 }
-int get_random_element_from_set(set<int> s){
+int getRandomElementFromSet(set<int> s){
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> distr(0, s.size() - 1);
@@ -298,7 +265,7 @@ void maximalCommonSubgraphProcessHeuristic(const vector<vector<int>> &graph1, co
         if(n2.size() == 0)
             break;
 
-        int v2_random = get_random_element_from_set(n2);
+        int v2_random = getRandomElementFromSet(n2);
         n2.erase(v2_random);
 
         mappedVertices2.insert(v2_random);
