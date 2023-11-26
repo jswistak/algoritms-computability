@@ -19,15 +19,17 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2);
 int main() {
     const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
     const int L_CONN = loadIntEnv("L_CONN", 2);
-
-    cout << "K_CLIQUE = " << K_CLIQUE << "\n";
-    cout << "L_CONN = " << L_CONN << "\n\n";
-
     int test_cases;
     cin >> test_cases;
-    cout << "Number of test cases (one test case = 2 graphs) : " << test_cases << "\n\n";
+
+    cout << BOLD << "Settings:\n" << RESET;
+    cout << "K_CLIQUE = " << K_CLIQUE << "\n";
+    cout << "L_CONN = " << L_CONN << "\n";
+    cout << "Number of test cases: " << test_cases << "\n" << endl;
 
     for (int test_case = 0; test_case < test_cases; test_case++) {
+        cout << BOLD << "-----------------------------Test case " << test_case + 1 << "-----------------------------" << RESET << endl;
+
         int matrix1_size, matrix2_size;
 
         cin >> matrix1_size;
@@ -36,11 +38,13 @@ int main() {
         cin >> matrix2_size;
         vector<vector<int>> matrix2 = readMatrix(matrix2_size);
 
-        cout << "Test case " << test_case + 1 << ":\n\n";
-
+        cout << BOLD << "Graph 1 largest clique:" << RESET << endl;
         largestClique(matrix1);
-        largestClique(matrix2);       
 
+        cout << BOLD << "Graph 2 properties:" << RESET << endl;
+        largestClique(matrix2);
+
+        cout << BOLD << "L-connectivity:" << RESET << endl;
         LConnectivity(matrix1, matrix2);
     }
     std::cout << std::endl;
@@ -69,22 +73,24 @@ void largestClique(vector<vector<int>> matrix) {
     bronKerbosch(R, P, X, graph);
 
 
-    cout << "BronKerbosch size - " << biggestCliqueBK.size() << " :\n" << CYAN;
-    for (auto v: biggestCliqueBK) {
+    cout << "Using BronKerbosch method (size " << BOLD << biggestCliqueBK.size() << RESET << "):\n";
+    cout << CYAN;
+    for (auto v : biggestCliqueBK) {
         cout << v << " ";
     }
     cout << RESET << "\n\n";
 
     // Finding largest clique in polynomial time - Monte carlo aproximation
     vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
-    std::cout << "Largest clique Monte Carlo - " << largest_clique.size() << " :\n" << BLUE;
-    for (int x: largest_clique) {
+    std::cout << "Using Monte Carlo method (size " << BOLD << largest_clique.size() << RESET << "):\n";
+    cout << BLUE;
+    for (int x : largest_clique) {
         std::cout << x << " ";
     }
-    cout << RESET << "\n";
+    cout << RESET << "\n\n";
 
     std::set<int> setLargestClique(largest_clique.begin(), largest_clique.end());
-    cout << "Adjacency matrix of largest clique using Monte Carlo:\n";
+    cout << "Adjacency matrix using Monte Carlo method:" << endl;
     printColoredAdjacencyMatrix(matrix, setLargestClique);
     cout << endl;
 }
@@ -103,7 +109,7 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     //Assuming each graph is a connected graph!
     maximalCommonSubgraph(graph1, graph2);
 
-    cout << "Largest common subgraph of size - " << largestMappings[0].size() << " : \n";
+    cout << "Largest common subgraph (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
     cout << CYAN;
     set<int> largestMappingG1;
     vector<pair<int, int>> tmp = getLargestMapping(graph1, graph2);
@@ -111,10 +117,11 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
         cout << pair.first << " -> " << pair.second << "\n";
         largestMappingG1.insert(pair.first);
     }
-    cout << RESET;
-    cout << "Adjacency matrix of largest common subgraph (exp):\n";
-    printColoredAdjacencyMatrix(matrix1, largestMappingG1, true);
+    cout << RESET << endl;
 
+    cout << "Adjacency matrix of largest common subgraph:\n";
+    printColoredAdjacencyMatrix(matrix1, largestMappingG1, true);
+    cout << endl;
 
     vertexMap.clear();
     mappedVertices1.clear();
@@ -122,12 +129,14 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     largestMappings.clear();
 
     approxCommonSubgraph(graph1, graph2); //Using DFS on 2 graphs simultaneously
-    cout << "Largest common subgraph of size - " << largestMappings[0].size() << " :\n" << BLUE;
+    cout << "Largest common subgraph using DFS approximation (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
+    cout << BLUE;
     for (auto pair : largestMappings[0]) {
         cout << pair.first << " -> " << pair.second << "\n";
     }
-    cout << RESET;
+    cout << RESET << endl;
+
     cout << "Distance between 2 graphs: ";
     pair<int, int> distance = distanceBetweenGraphs(matrix1, matrix2, tmp);
-    cout << "(" << distance.first << " , " << distance.second << ")\n";
+    cout << BOLD << "(" << distance.first << " , " << distance.second << ")\n" << RESET;
 }

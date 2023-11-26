@@ -8,8 +8,6 @@ using namespace std;
 
 // Function to print the adjacency matrix with the clique elements colored
 void printColoredAdjacencyMatrix(const vector<vector<int>>& matrix, const set<int>& largest_clique, bool colorTheSame) {
-
-    cout << "\n" << RESET; // Reset text color to default
     for (size_t i = 0; i < matrix.size(); ++i) {
         for (size_t j = 0; j < matrix[i].size(); ++j) {
             // Check if both nodes are in the largest clique
