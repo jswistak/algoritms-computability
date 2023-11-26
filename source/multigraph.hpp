@@ -14,7 +14,7 @@ extern std::set<int> biggestCliqueBK;
 extern std::unordered_map<int, int> vertexMap;
 extern std::unordered_set<int> mappedVertices1;
 extern std::unordered_set<int> mappedVertices2;
-extern std::vector<std::vector<std::pair<int,int>>> largestMappings;
+extern std::vector<std::vector<std::pair<int, int>>> largestMappings;
 
 
 void printColoredAdjacencyMatrix(const std::vector<std::vector<int>>& matrix, const std::set<int>& largest_clique, bool colorTheSame = false);
