@@ -89,3 +89,9 @@ dkms.conf
 
 # CLion
 .idea/
+
+# MacOS
+*.DS_Store
+
+# VS Code
+.vscode/
