@@ -13,19 +13,14 @@ void printColoredAdjacencyMatrix(const vector<vector<int>>& matrix, const set<in
             // Check if both nodes are in the largest clique
             if ((colorTheSame || i != j) && largest_clique.find(i) != largest_clique.end() && largest_clique.find(j) != largest_clique.end() and matrix[i][j] > 0) {
                 cout << RED; // Set text color to red for clique elements
-            } else {
-                cout << RESET; // Reset text color to default
-            }
-
+            } 
             // Print the matrix element
-            cout << matrix[i][j] << " ";
-
-
+            cout << matrix[i][j] << " " << RESET;
         }
         cout << endl; // Newline after each row
     }
-    cout << RESET; // Reset text color to default
 }
+
 vector<vector<int>> readMatrix(int n) {
     vector<vector<int>> matrix;
     int value;
@@ -45,9 +40,7 @@ vector<vector<int>> reduceAllValuesToOne(vector<vector<int>> multigraph, int k) 
     for (int i = 0; i < multigraph.size(); i++) {
         vector<int> row;
         for (int j = 0; j < multigraph.size(); j++) {
-            if (i == j) {
-                row.push_back(0);
-            } else if (multigraph[i][j] >= k) {
+            if (i != j && multigraph[i][j] >= k) {
                 row.push_back(1);
             } else {
                 row.push_back(0);
@@ -71,13 +64,13 @@ bool isClique(vector<vector<int>>& graph, vector<int>& nodes) {
 
 int approximateIterations(const vector<vector<int>>& graph) {
     int n = graph.size(); // Number of vertices
+    const int scaleFactor = 200;
 
     // Calculate edge count
     int edgeCount = 0;
     for (int i = 0; i < n; i++) {
         edgeCount += graph[i].size();
     }
-    const int scaleFactor = 200;
 
     return (edgeCount / (n + 1)) * scaleFactor;
 }
@@ -268,6 +261,7 @@ void maximalCommonSubgraphProcessHeuristic(const vector<vector<int>>& graph1, co
         vertexMap[v] = v2_random;
         maximalCommonSubgraphProcessHeuristic(graph1, graph2, v, v2_random);
     }
+    
     if (largestMappings.empty() || vertexMap.size() > largestMappings[0].size()) {
         largestMappings.clear();
         vector<pair<int, int>> tmp;
@@ -276,7 +270,6 @@ void maximalCommonSubgraphProcessHeuristic(const vector<vector<int>>& graph1, co
         }
         largestMappings.push_back(tmp);
     }
-
 }
 void approxCommonSubgraph(const vector<vector<int>>& graph1, const vector<vector<int>>& graph2) {
     vertexMap.clear();
@@ -292,7 +285,6 @@ void approxCommonSubgraph(const vector<vector<int>>& graph1, const vector<vector
             mappedVertices1.clear();
             mappedVertices2.clear();
             vertexMap.clear();
-
         }
     }
 }
@@ -312,12 +304,10 @@ int getEdges(const vector<pair<int, int>> mappingP, const vector<vector<int>>& g
 vector<pair<int, int>> getLargestMapping(const vector<vector<int>>& graph, const vector<vector<int>>& graph2) {
     vector<pair<int, int>> largestMapping;
     int edges = 0;
-    //cout << "largestMappings.size(): " << largestMappings.size() << endl;
     for (const auto& mapping : largestMappings) {
         int tmp = getEdges(mapping, graph, graph2);
 
         if (tmp > edges) {
-            //cout << "tmp: " << tmp << endl;
             edges = tmp;
             largestMapping = mapping;
         }
@@ -334,7 +324,6 @@ int graphEdges(const vector<vector<int>>& graph) {
     return edges;
 }
 pair<int, int> distanceBetweenGraphs(const vector<vector<int>>& graph1, const vector<vector<int>>& graph2, const vector<pair<int, int>>& mapping) {
-
     int distance_v = graph1.size() + graph2.size() - 2 * mapping.size();
     int distance_e = graphEdges(graph1) + graphEdges(graph2) - 2 * getEdges(mapping, graph1, graph2);
     return { distance_v, distance_e };
