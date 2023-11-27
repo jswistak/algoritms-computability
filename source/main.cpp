@@ -95,10 +95,8 @@ void largestClique(vector<vector<int>> matrix) {
     }
     cout << RESET << "\n\n";
 
-    start = chrono::high_resolution_clock::now();
     std::set<int> setLargestClique(largest_clique.begin(), largest_clique.end());
-    end = chrono::high_resolution_clock::now();
-    cout << periodToString(start, end) << "Adjacency matrix using Monte Carlo method:" << endl;
+    cout << "Adjacency matrix using Monte Carlo method:" << endl;
     printColoredAdjacencyMatrix(matrix, setLargestClique);
     cout << endl;
 }
