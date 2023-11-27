@@ -1,6 +1,6 @@
 # Get the directory of the current script
 Param(
-    [Parameter(Mandatory)][bool]$TimeMeasurementsReport
+    [Parameter(Mandatory=$false)][bool]$TimeMeasurementsReport = $False
 )
 
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
