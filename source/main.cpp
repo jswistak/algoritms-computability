@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <iterator>
 #include <cstdlib>
+#include <chrono>
 
 #include "colors.hpp"
 #include "multigraph.hpp"
@@ -15,6 +16,7 @@ using namespace std;
 int loadIntEnv(const char* env_var_name, int default_value);
 void largestClique(vector<vector<int>> matrix);
 void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2);
+std::string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end);
 
 int main() {
     const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
@@ -70,10 +72,12 @@ void largestClique(vector<vector<int>> matrix) {
     for (int i = 0; i < graph.size(); ++i) {
         P.insert(i);
     }
+
+    auto start = chrono::high_resolution_clock::now();
     bronKerbosch(R, P, X, graph);
+    auto end = chrono::high_resolution_clock::now();
 
-
-    cout << "Using BronKerbosch method (size " << BOLD << biggestCliqueBK.size() << RESET << "):\n";
+    cout << periodToString(start, end) << "Using BronKerbosch method (size " << BOLD << biggestCliqueBK.size() << RESET << "):\n";
     cout << CYAN;
     for (auto v : biggestCliqueBK) {
         cout << v << " ";
@@ -81,16 +85,20 @@ void largestClique(vector<vector<int>> matrix) {
     cout << RESET << "\n\n";
 
     // Finding largest clique in polynomial time - Monte carlo aproximation
+    start = chrono::high_resolution_clock::now();
     vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
-    std::cout << "Using Monte Carlo method (size " << BOLD << largest_clique.size() << RESET << "):\n";
+    end = chrono::high_resolution_clock::now();
+    std::cout << periodToString(start, end) << "Using Monte Carlo method (size " << BOLD << largest_clique.size() << RESET << "):\n";
     cout << BLUE;
     for (int x : largest_clique) {
         std::cout << x << " ";
     }
     cout << RESET << "\n\n";
 
+    start = chrono::high_resolution_clock::now();
     std::set<int> setLargestClique(largest_clique.begin(), largest_clique.end());
-    cout << "Adjacency matrix using Monte Carlo method:" << endl;
+    end = chrono::high_resolution_clock::now();
+    cout << periodToString(start, end) << "Adjacency matrix using Monte Carlo method:" << endl;
     printColoredAdjacencyMatrix(matrix, setLargestClique);
     cout << endl;
 }
@@ -107,9 +115,11 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     largestMappings.clear();
 
     //Assuming each graph is a connected graph!
+    auto start = chrono::high_resolution_clock::now();
     maximalCommonSubgraph(graph1, graph2);
+    auto end = chrono::high_resolution_clock::now();
 
-    cout << "Largest common subgraph (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
+    cout << periodToString(start, end) << "Largest common subgraph (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
     cout << CYAN;
     set<int> largestMappingG1;
     vector<pair<int, int>> tmp = getLargestMapping(graph1, graph2);
@@ -128,15 +138,24 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     mappedVertices2.clear();
     largestMappings.clear();
 
+    start = chrono::high_resolution_clock::now();
     approxCommonSubgraph(graph1, graph2); //Using DFS on 2 graphs simultaneously
-    cout << "Largest common subgraph using DFS approximation (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
+    end = chrono::high_resolution_clock::now();
+    cout << periodToString(start, end) << "Largest common subgraph using DFS approximation (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
     cout << BLUE;
     for (auto pair : largestMappings[0]) {
         cout << pair.first << " -> " << pair.second << "\n";
     }
     cout << RESET << endl;
 
-    cout << "Distance between 2 graphs: ";
+    start = chrono::high_resolution_clock::now();
     pair<int, int> distance = distanceBetweenGraphs(matrix1, matrix2, tmp);
-    cout << BOLD << "(" << distance.first << " , " << distance.second << ")\n" << RESET;
+    end = chrono::high_resolution_clock::now();
+
+    cout << periodToString(start, end) << "Distance between 2 graphs: " << BOLD << "(" << distance.first << " , " << distance.second << ")\n" << RESET;
+}
+
+std::string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end) {
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    return "[" + std::to_string(duration.count()) + " us] ";
 }
