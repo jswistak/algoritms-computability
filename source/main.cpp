@@ -40,10 +40,10 @@ int main() {
         cin >> matrix2_size;
         vector<vector<int>> matrix2 = readMatrix(matrix2_size);
 
-        cout << BOLD << "Graph 1 largest clique:" << RESET << endl;
+        cout << BOLD << "Graph 1 (N = " << matrix1_size << ") largest clique:" << RESET << endl;
         largestClique(matrix1);
 
-        cout << BOLD << "Graph 2 properties:" << RESET << endl;
+        cout << BOLD << "Graph 2 (N = " << matrix2_size << ") largest clique:" << RESET << endl;
         largestClique(matrix2);
 
         cout << BOLD << "L-connectivity:" << RESET << endl;
@@ -151,8 +151,7 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     start = chrono::high_resolution_clock::now();
     pair<int, int> distance = distanceBetweenGraphs(matrix1, matrix2, tmp);
     end = chrono::high_resolution_clock::now();
-
-    cout << periodToString(start, end) << "Distance between 2 graphs: " << BOLD << "(" << distance.first << " , " << distance.second << ")\n" << RESET;
+    cout << periodToString(start, end) << "Distance between 2 graphs: " << BOLD << "(" << distance.first << " , " << distance.second << ")\n" << RESET << endl;
 }
 
 std::string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end) {
