@@ -1,6 +1,8 @@
 # Get the directory of the current script
 Param(
-    [Parameter(Mandatory=$false)][bool]$TimeMeasurementsReport = $False
+    [Parameter(Mandatory=$false)][switch]$TimeMeasurementsReport = $False,
+    [Parameter(Mandatory=$false)][switch]$SkipCliques = $False,
+    [Parameter(Mandatory=$false)][switch]$SkipConnectivity = $False
 )
 
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -38,17 +40,34 @@ function Capture($Output) {
         # Order of times: BronKerbosch, Monte Carlo, largest common subgraph, largest common subgraph (approximate), distance
         $Times = ($TestCase | Select-String -AllMatches -Pattern "(?<=\[)\d+(?= us\])").Matches.Value
 
-        $Result += "Graph 1 size = $Graph1Size"
-        $Result += "BronKerbosch time = $($Times[0])"
-        $Result += "Monte Carlo time = $($Times[1])"
+        if (-not $SkipCliques -and -not $SkipConnectivity) {
+            $Result += "Graph 1 size = $Graph1Size"
+            $Result += "BronKerbosch time = $($Times[0])"
+            $Result += "Monte Carlo time = $($Times[1])"
 
-        $Result += "Graph 2 size = $Graph2Size"
-        $Result += "BronKerbosch time = $($Times[2])"
-        $Result += "Monte Carlo time = $($Times[3])"
+            $Result += "Graph 2 size = $Graph2Size"
+            $Result += "BronKerbosch time = $($Times[2])"
+            $Result += "Monte Carlo time = $($Times[3])"
 
-        $Result += "Largest common subgraph time = $($Times[4])"
-        $Result += "Largest common subgraph (approximate) time = $($Times[5])"
-        $Result += "Distance = $($Times[6])"
+            $Result += "Largest common subgraph time = $($Times[4])"
+            $Result += "Largest common subgraph (approximate) time = $($Times[5])"
+            $Result += "Distance = $($Times[6])"
+        } elseif (-not $SkipCliques) {
+            $Result += "Graph 1 size = $Graph1Size"
+            $Result += "BronKerbosch time = $($Times[0])"
+            $Result += "Monte Carlo time = $($Times[1])"
+
+            $Result += "Graph 2 size = $Graph2Size"
+            $Result += "BronKerbosch time = $($Times[2])"
+            $Result += "Monte Carlo time = $($Times[3])"
+        } elseif (-not $SkipConnectivity) {
+            $Result += "Graph 1 size = $Graph1Size"
+            $Result += "Graph 2 size = $Graph2Size"
+
+            $Result += "Largest common subgraph time = $($Times[0])"
+            $Result += "Largest common subgraph (approximate) time = $($Times[1])"
+            $Result += "Distance = $($Times[2])"
+        }
 
         $Result += "-----------------------------"
     }
