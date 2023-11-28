@@ -14,11 +14,17 @@
 using namespace std;
 
 int loadIntEnv(const char* env_var_name, int default_value);
+bool loadEnvFlag(const char* env_var_name, bool default_value);
 void largestClique(vector<vector<int>> matrix);
 void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2);
-std::string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end);
+string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end);
 
 int main() {
+    const bool skip_clique = loadEnvFlag("SKIP_CLIQUE", false);
+    const bool skip_conn = loadEnvFlag("SKIP_CONN", false);
+    if (skip_clique && skip_conn) {
+        return 0;
+    }
     const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
     const int L_CONN = loadIntEnv("L_CONN", 2);
     int test_cases;
@@ -40,20 +46,32 @@ int main() {
         cin >> matrix2_size;
         vector<vector<int>> matrix2 = readMatrix(matrix2_size);
 
-        cout << BOLD << "Graph 1 (N = " << matrix1_size << ") largest clique:" << RESET << endl;
-        largestClique(matrix1);
+        if (!skip_clique) {
+            cout << BOLD << "Graph 1 (N = " << matrix1_size << ") largest clique:" << RESET << endl;
+            largestClique(matrix1);
 
-        cout << BOLD << "Graph 2 (N = " << matrix2_size << ") largest clique:" << RESET << endl;
-        largestClique(matrix2);
+            cout << BOLD << "Graph 2 (N = " << matrix2_size << ") largest clique:" << RESET << endl;
+            largestClique(matrix2);
+        } else {
+            cout << BOLD << "Graph 1 (N = " << matrix1_size << ")" << RESET << endl;
+            cout << BOLD << "Graph 2 (N = " << matrix2_size << ")" << RESET << endl;
+        }
 
-        cout << BOLD << "L-connectivity:" << RESET << endl;
-        LConnectivity(matrix1, matrix2);
+        if (!skip_conn) {
+            cout << BOLD << "L-connectivity:" << RESET << endl;
+            LConnectivity(matrix1, matrix2);
+        }
     }
     std::cout << std::endl;
     return 0;
 }
 
 int loadIntEnv(const char* env_var_name, int default_value) {
+    const char* env_var = getenv(env_var_name);
+    return env_var != nullptr ? std::stoi(env_var) : default_value;
+}
+
+bool loadEnvFlag(const char* env_var_name, bool default_value) {
     const char* env_var = getenv(env_var_name);
     return env_var != nullptr ? std::stoi(env_var) : default_value;
 }

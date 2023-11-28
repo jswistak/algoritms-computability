@@ -1,6 +1,8 @@
 # Get the directory of the current script
 Param(
-    [Parameter(Mandatory=$false)][bool]$TimeMeasurementsReport = $False
+    [Parameter(Mandatory=$false)][switch]$TimeMeasurementsReport,
+    [Parameter()][switch]$SkipCliques,
+    [Parameter()][switch]$SkipConnectivity
 )
 
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -9,11 +11,8 @@ $InputDir = Join-Path (Split-Path $ScriptDir -Parent) "examples"
 $InputFiles = @(Get-ChildItem -Path $InputDir -Filter *.txt | Select-Object -ExpandProperty FullName)
 $ReportFile = Join-Path $ScriptDir "report.txt"
 $TestVariants = @(
-    @{ K_CLIQUE = 1; L_CONN = 1 }
-    @{ K_CLIQUE = 2; L_CONN = 2 }
-    @{ K_CLIQUE = 5; L_CONN = 5 }
-    @{ K_CLIQUE = 10; L_CONN = 10 }
-    @{ K_CLIQUE = 15; L_CONN = 15 }
+    @{ K_CLIQUE = 3; L_CONN = 2 },
+    @{ K_CLIQUE = 10; L_CONN = 5 }
 )
 
 if ($TimeMeasurementsReport -and (Test-Path $ReportFile)) {
@@ -38,22 +37,47 @@ function Capture($Output) {
         # Order of times: BronKerbosch, Monte Carlo, largest common subgraph, largest common subgraph (approximate), distance
         $Times = ($TestCase | Select-String -AllMatches -Pattern "(?<=\[)\d+(?= us\])").Matches.Value
 
-        $Result += "Graph 1 size = $Graph1Size"
-        $Result += "BronKerbosch time = $($Times[0])"
-        $Result += "Monte Carlo time = $($Times[1])"
+        if (-not $SkipCliques -and -not $SkipConnectivity) {
+            $Result += "Graph 1 size = $Graph1Size"
+            $Result += "BronKerbosch time = $($Times[0])"
+            $Result += "Monte Carlo time = $($Times[1])"
 
-        $Result += "Graph 2 size = $Graph2Size"
-        $Result += "BronKerbosch time = $($Times[2])"
-        $Result += "Monte Carlo time = $($Times[3])"
+            $Result += "Graph 2 size = $Graph2Size"
+            $Result += "BronKerbosch time = $($Times[2])"
+            $Result += "Monte Carlo time = $($Times[3])"
 
-        $Result += "Largest common subgraph time = $($Times[4])"
-        $Result += "Largest common subgraph (approximate) time = $($Times[5])"
-        $Result += "Distance = $($Times[6])"
+            $Result += "Largest common subgraph time = $($Times[4])"
+            $Result += "Largest common subgraph (approximate) time = $($Times[5])"
+            $Result += "Distance = $($Times[6])"
+        } elseif (-not $SkipCliques) {
+            $Result += "Graph 1 size = $Graph1Size"
+            $Result += "BronKerbosch time = $($Times[0])"
+            $Result += "Monte Carlo time = $($Times[1])"
+
+            $Result += "Graph 2 size = $Graph2Size"
+            $Result += "BronKerbosch time = $($Times[2])"
+            $Result += "Monte Carlo time = $($Times[3])"
+        } elseif (-not $SkipConnectivity) {
+            $Result += "Graph 1 size = $Graph1Size"
+            $Result += "Graph 2 size = $Graph2Size"
+
+            $Result += "Largest common subgraph time = $($Times[0])"
+            $Result += "Largest common subgraph (approximate) time = $($Times[1])"
+            $Result += "Distance = $($Times[2])"
+        }
 
         $Result += "-----------------------------"
     }
 
     return $Result -join "`n"
+}
+
+if ($SkipCliques) {
+    $env:SKIP_CLIQUE = "1"
+}
+
+if ($SkipConnectivity) {
+    $env:SKIP_CONN = "1"
 }
 
 foreach ($Variant in $TestVariants) {
