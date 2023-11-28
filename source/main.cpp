@@ -21,12 +21,10 @@ string periodToString(std::chrono::steady_clock::time_point start, std::chrono::
 
 int main() {
     const bool skip_clique = loadEnvFlag("SKIP_CLIQUE", false);
-    const bool skip_lconnectivity = loadEnvFlag("SKIP_LCONNECTIVITY", false);
-    if (skip_clique && skip_lconnectivity) {
-        cout << "Both SKIP_CLIQUE and SKIP_LCONNECTIVITY are set to true, nothing to do." << std::endl;
+    const bool skip_conn = loadEnvFlag("SKIP_CONN", false);
+    if (skip_clique && skip_conn) {
         return 0;
     }
-
     const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
     const int L_CONN = loadIntEnv("L_CONN", 2);
     int test_cases;
@@ -59,7 +57,7 @@ int main() {
             cout << BOLD << "Graph 2 (N = " << matrix2_size << ")" << RESET << endl;
         }
 
-        if (!skip_lconnectivity) {
+        if (!skip_conn) {
             cout << BOLD << "L-connectivity:" << RESET << endl;
             LConnectivity(matrix1, matrix2);
         }

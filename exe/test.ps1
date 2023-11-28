@@ -1,8 +1,8 @@
 # Get the directory of the current script
 Param(
-    [Parameter(Mandatory=$false)][switch]$TimeMeasurementsReport = $False,
-    [Parameter(Mandatory=$false)][switch]$SkipCliques = $False,
-    [Parameter(Mandatory=$false)][switch]$SkipConnectivity = $False
+    [Parameter(Mandatory=$false)][switch]$TimeMeasurementsReport,
+    [Parameter()][switch]$SkipCliques,
+    [Parameter()][switch]$SkipConnectivity
 )
 
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -11,11 +11,8 @@ $InputDir = Join-Path (Split-Path $ScriptDir -Parent) "examples"
 $InputFiles = @(Get-ChildItem -Path $InputDir -Filter *.txt | Select-Object -ExpandProperty FullName)
 $ReportFile = Join-Path $ScriptDir "report.txt"
 $TestVariants = @(
-    @{ K_CLIQUE = 1; L_CONN = 1 }
-    @{ K_CLIQUE = 2; L_CONN = 2 }
-    @{ K_CLIQUE = 5; L_CONN = 5 }
-    @{ K_CLIQUE = 10; L_CONN = 10 }
-    @{ K_CLIQUE = 15; L_CONN = 15 }
+    @{ K_CLIQUE = 3; L_CONN = 2 },
+    @{ K_CLIQUE = 10; L_CONN = 5 }
 )
 
 if ($TimeMeasurementsReport -and (Test-Path $ReportFile)) {
@@ -73,6 +70,14 @@ function Capture($Output) {
     }
 
     return $Result -join "`n"
+}
+
+if ($SkipCliques) {
+    $env:SKIP_CLIQUE = "1"
+}
+
+if ($SkipConnectivity) {
+    $env:SKIP_CONN = "1"
 }
 
 foreach ($Variant in $TestVariants) {
