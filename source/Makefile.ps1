@@ -14,16 +14,16 @@ function Build-All {
 function Build-Main {
     g++ -std=c++17 -Wall -g -pedantic -c main.cpp
     g++ -std=c++17 -Wall -g -pedantic -c multigraph.cpp
-    g++ -std=c++17 -Wall -g -pedantic main.o multigraph.o -o $exePath/main.out
+    g++ -std=c++17 -Wall -g -pedantic main.o multigraph.o -o $exePath/main.exe
 }
 
 function Build-Generator {
-    g++ -std=c++17 -Wall -g -pedantic generator.cpp -o $exePath/generator.out
+    g++ -std=c++17 -Wall -g -pedantic generator.cpp -o $exePath/generator.exe
 }
 
 function Clean {
     Remove-Item *.o
-    Remove-Item $exePath/*.out
+    Remove-Item $exePath/*.exe
 }
 
 if ($FunctionName -eq "Build-All") {

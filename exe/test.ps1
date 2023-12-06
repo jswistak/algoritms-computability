@@ -6,7 +6,7 @@ Param(
 )
 
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
-$ProgramPath = Join-Path $ScriptDir "main.out"
+$ProgramPath = Join-Path $ScriptDir "main.exe"
 $InputDir = Join-Path (Split-Path $ScriptDir -Parent) "examples"
 $InputFiles = @(Get-ChildItem -Path $InputDir -Filter *.txt | Select-Object -ExpandProperty FullName)
 $ReportFile = Join-Path $ScriptDir "report.txt"

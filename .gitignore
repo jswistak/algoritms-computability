@@ -29,7 +29,7 @@
 
 # Executables
 *.exe
-*.out
+*.exe
 *.app
 
 ### C template
@@ -65,7 +65,7 @@
 
 # Executables
 *.exe
-*.out
+*.exe
 *.app
 *.i*86
 *.x86_64
