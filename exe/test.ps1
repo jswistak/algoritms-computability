@@ -1,6 +1,6 @@
 # Get the directory of the current script
 Param(
-    [Parameter(Mandatory=$false)][switch]$TimeMeasurementsReport,
+    [Parameter(Mandatory = $false)][switch]$TimeMeasurementsReport,
     [Parameter()][switch]$SkipCliques,
     [Parameter()][switch]$SkipConnectivity
 )
@@ -49,7 +49,8 @@ function Capture($Output) {
             $Result += "Largest common subgraph time = $($Times[4])"
             $Result += "Largest common subgraph (approximate) time = $($Times[5])"
             $Result += "Distance = $($Times[6])"
-        } elseif (-not $SkipCliques) {
+        }
+        elseif (-not $SkipCliques) {
             $Result += "Graph 1 size = $Graph1Size"
             $Result += "BronKerbosch time = $($Times[0])"
             $Result += "Monte Carlo time = $($Times[1])"
@@ -57,7 +58,8 @@ function Capture($Output) {
             $Result += "Graph 2 size = $Graph2Size"
             $Result += "BronKerbosch time = $($Times[2])"
             $Result += "Monte Carlo time = $($Times[3])"
-        } elseif (-not $SkipConnectivity) {
+        }
+        elseif (-not $SkipConnectivity) {
             $Result += "Graph 1 size = $Graph1Size"
             $Result += "Graph 2 size = $Graph2Size"
 
@@ -86,7 +88,7 @@ foreach ($Variant in $TestVariants) {
 
     foreach ($InputFile in $InputFiles) {
         $Output = Get-Content $InputFile | & $ProgramPath
-        $Output
+        $Output | Out-Host
 
         if ($TimeMeasurementsReport) {
             Add-Content $ReportFile (Capture $Output)
