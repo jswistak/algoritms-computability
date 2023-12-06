@@ -91,9 +91,9 @@ void largestClique(vector<vector<int>> matrix) {
         P.insert(i);
     }
 
-    auto start = chrono::high_resolution_clock::now();
+    auto start = chrono::steady_clock::now();
     bronKerbosch(R, P, X, graph);
-    auto end = chrono::high_resolution_clock::now();
+    auto end = chrono::steady_clock::now();
 
     cout << periodToString(start, end) << "Using BronKerbosch method (size " << BOLD << biggestCliqueBK.size() << RESET << "):\n";
     cout << CYAN;
@@ -103,9 +103,9 @@ void largestClique(vector<vector<int>> matrix) {
     cout << RESET << "\n\n";
 
     // Finding largest clique in polynomial time - Monte carlo aproximation
-    start = chrono::high_resolution_clock::now();
+    start = chrono::steady_clock::now();
     vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
-    end = chrono::high_resolution_clock::now();
+    end = chrono::steady_clock::now();
     std::cout << periodToString(start, end) << "Using Monte Carlo method (size " << BOLD << largest_clique.size() << RESET << "):\n";
     cout << BLUE;
     for (int x : largest_clique) {
@@ -131,9 +131,9 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     largestMappings.clear();
 
     //Assuming each graph is a connected graph!
-    auto start = chrono::high_resolution_clock::now();
+    auto start = chrono::steady_clock::now();
     maximalCommonSubgraph(graph1, graph2);
-    auto end = chrono::high_resolution_clock::now();
+    auto end = chrono::steady_clock::now();
 
     cout << periodToString(start, end) << "Largest common subgraph (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
     cout << CYAN;
@@ -154,9 +154,9 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     mappedVertices2.clear();
     largestMappings.clear();
 
-    start = chrono::high_resolution_clock::now();
+    start = chrono::steady_clock::now();
     approxCommonSubgraph(graph1, graph2); //Using DFS on 2 graphs simultaneously
-    end = chrono::high_resolution_clock::now();
+    end = chrono::steady_clock::now();
     cout << periodToString(start, end) << "Largest common subgraph using DFS approximation (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
     cout << BLUE;
     for (auto pair : largestMappings[0]) {
@@ -164,9 +164,9 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     }
     cout << RESET << endl;
 
-    start = chrono::high_resolution_clock::now();
+    start = chrono::steady_clock::now();
     pair<int, int> distance = distanceBetweenGraphs(matrix1, matrix2, tmp);
-    end = chrono::high_resolution_clock::now();
+    end = chrono::steady_clock::now();
     cout << periodToString(start, end) << "Distance between 2 graphs: " << BOLD << "(" << distance.first << " , " << distance.second << ")\n" << RESET << endl;
 }
 
