@@ -5,16 +5,16 @@ exe_path = ../exe
 all: main generator
 
 main: main.o multigraph.o
-	g++ -std=c++17 -Wall -g -fsanitize=address -pedantic main.o multigraph.o -o $(exe_path)/main.out
+	g++ -std=c++17 -Wall -g -pedantic main.o multigraph.o -o $(exe_path)/main.out
 
 main.o: main.cpp colors.hpp multigraph.hpp
-	g++ -std=c++17 -Wall -g -fsanitize=address -pedantic -c main.cpp
+	g++ -std=c++17 -Wall -g -pedantic -c main.cpp
 
 multigraph.o: multigraph.cpp multigraph.hpp colors.hpp
-	g++ -std=c++17 -Wall -g -fsanitize=address -pedantic -c multigraph.cpp
+	g++ -std=c++17 -Wall -g -pedantic -c multigraph.cpp
 
 generator: generator.cpp
-	g++ -std=c++17 -Wall -g -fsanitize=address -pedantic generator.cpp -o $(exe_path)/generator.out
+	g++ -std=c++17 -Wall -g -pedantic generator.cpp -o $(exe_path)/generator.out
 
 clean:
 	rm -f *.o $(exe_path)/*.out
