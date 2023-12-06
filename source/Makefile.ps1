@@ -3,6 +3,7 @@ Param(
     [string]$FunctionName = "Build-All"
 )
 
+Set-Location $PSScriptRoot
 $exePath = Join-Path $PSScriptRoot "/../exe"
 
 function Build-All {
