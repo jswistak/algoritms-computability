@@ -1,6 +1,6 @@
 #include <iostream>
 #include <random>
-
+#include <algorithm>
 #include "multigraph.hpp"
 #include "colors.hpp"
 
