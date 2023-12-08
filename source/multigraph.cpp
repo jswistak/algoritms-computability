@@ -37,9 +37,9 @@ vector<vector<int>> readMatrix(int n) {
 
 vector<vector<int>> reduceAllValuesToOne(vector<vector<int>> multigraph, int k) {
     vector<vector<int>> graph;
-    for (int i = 0; i < multigraph.size(); i++) {
+    for (size_t i = 0; i < multigraph.size(); i++) {
         vector<int> row;
-        for (int j = 0; j < multigraph.size(); j++) {
+        for (size_t j = 0; j < multigraph.size(); j++) {
             if (i != j && multigraph[i][j] >= k) {
                 row.push_back(1);
             } else {
@@ -52,8 +52,8 @@ vector<vector<int>> reduceAllValuesToOne(vector<vector<int>> multigraph, int k) 
 }
 
 bool isClique(vector<vector<int>>& graph, vector<int>& nodes) {
-    for (int i = 0; i < nodes.size(); ++i) {
-        for (int j = i + 1; j < nodes.size(); ++j) {
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        for (size_t j = i + 1; j < nodes.size(); ++j) {
             if (graph[nodes[i]][nodes[j]] == 0) {
                 return false;
             }
@@ -104,7 +104,7 @@ vector<int> monteCarloClique(vector<vector<int>>& graph, int iterations) {
 
 set<int> neighbors(int v, const vector<vector<int>>& adj) {
     set<int> result;
-    for (int i = 0; i < adj.size(); ++i) {
+    for (size_t i = 0; i < adj.size(); ++i) {
         if (adj[v][i]) {
             result.insert(i);
         }
@@ -154,12 +154,12 @@ vector<vector<pair<int, int>>> largestMappings = vector<vector<pair<int, int>>>(
 
 void maximalCommonSubgraphProcess(const vector<vector<int>>& graph1, const vector<vector<int>>& graph2, vector<pair<int, int>>& edges1, vector<pair<int, int>>& edges2) {
     for (auto element : vertexMap) {
-        for (int v1 = 0; v1 < graph1[element.first].size(); ++v1) { //iterate over all neighbors of v1 not yet mapped
+        for (size_t v1 = 0; v1 < graph1[element.first].size(); ++v1) { //iterate over all neighbors of v1 not yet mapped
             if (mappedVertices1.find(v1) != mappedVertices1.end()) continue;
             if (graph1[element.first][v1] == 0) continue;
 
             mappedVertices1.insert(v1);
-            for (int v2 = 0; v2 < graph2[element.second].size(); ++v2) { //iterate over all neighbors of v2 not yet mapped
+            for (size_t v2 = 0; v2 < graph2[element.second].size(); ++v2) { //iterate over all neighbors of v2 not yet mapped
                 if (mappedVertices2.find(v2) != mappedVertices2.end()) continue;
                 if (graph2[element.second][v2] == 0) continue;
 
@@ -192,8 +192,8 @@ void maximalCommonSubgraphProcess(const vector<vector<int>>& graph1, const vecto
     //try to save as the biggest common subgraph
 }
 void maximalCommonSubgraph(const vector<vector<int>>& graph1, const vector<vector<int>>& graph2) {
-    for (int i = 0; i < graph1.size(); ++i) {
-        for (int j = 0; j < graph2.size(); ++j) {
+    for (size_t i = 0; i < graph1.size(); ++i) {
+        for (size_t j = 0; j < graph2.size(); ++j) {
             vertexMap[i] = j;
             mappedVertices1.insert(i);
             mappedVertices2.insert(j);
@@ -276,8 +276,8 @@ void approxCommonSubgraph(const vector<vector<int>>& graph1, const vector<vector
     mappedVertices1.clear();
     mappedVertices2.clear();
 
-    for (int i = 0; i < graph1.size(); i++) {
-        for (int j = 0; j < graph2.size(); j++) {
+    for (size_t i = 0; i < graph1.size(); i++) {
+        for (size_t j = 0; j < graph2.size(); j++) {
             vertexMap[i] = j;
             mappedVertices1.insert(i);
             mappedVertices2.insert(j);
@@ -316,8 +316,8 @@ vector<pair<int, int>> getLargestMapping(const vector<vector<int>>& graph, const
 }
 int graphEdges(const vector<vector<int>>& graph) {
     int edges = 0;
-    for (int i = 0; i < graph.size(); ++i) {
-        for (int j = 0; j < graph.size(); ++j) {
+    for (size_t i = 0; i < graph.size(); ++i) {
+        for (size_t j = 0; j < graph.size(); ++j) {
             edges += graph[i][j];
         }
     }

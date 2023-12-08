@@ -87,7 +87,7 @@ void largestClique(vector<vector<int>> matrix) {
 
     biggestCliqueBK.clear();
     set<int> R, P, X;
-    for (int i = 0; i < graph.size(); ++i) {
+    for (size_t i = 0; i < graph.size(); ++i) {
         P.insert(i);
     }
 
