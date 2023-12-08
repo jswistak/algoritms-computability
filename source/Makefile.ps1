@@ -3,6 +3,7 @@ Param(
     [string]$FunctionName = "Build-All"
 )
 
+$oldDir = Get-Location
 Set-Location $PSScriptRoot
 $exePath = Join-Path $PSScriptRoot "/../exe"
 
@@ -41,3 +42,5 @@ elseif ($FunctionName -eq "Clean") {
 else {
     Write-Host "Invalid function name"
 }
+
+Set-Location $oldDir
