@@ -33,6 +33,7 @@ function Capture($Output) {
     foreach ($TestCase in $TestCases) {
         $Graph1Size = ($TestCase | Select-String -Pattern "(?<=Graph 1 \(N = )\d+").Matches.Value
         $Graph2Size = ($TestCase | Select-String -Pattern "(?<=Graph 2 \(N = )\d+").Matches.Value
+        $SkipSecondGraph = [string]::IsNullOrEmpty($Graph2Size)
         
         # Order of times: BronKerbosch, Monte Carlo, largest common subgraph, largest common subgraph (approximate), distance
         $Times = ($TestCase | Select-String -AllMatches -Pattern "(?<=\[)\d+(?= us\])").Matches.Value
@@ -42,24 +43,28 @@ function Capture($Output) {
             $Result += "BronKerbosch time = $($Times[0])"
             $Result += "Monte Carlo time = $($Times[1])"
 
-            $Result += "Graph 2 size = $Graph2Size"
-            $Result += "BronKerbosch time = $($Times[2])"
-            $Result += "Monte Carlo time = $($Times[3])"
+            if (-not $SkipSecondGraph) {
+                $Result += "Graph 2 size = $Graph2Size"
+                $Result += "BronKerbosch time = $($Times[2])"
+                $Result += "Monte Carlo time = $($Times[3])"
 
-            $Result += "Largest common subgraph time = $($Times[4])"
-            $Result += "Largest common subgraph (approximate) time = $($Times[5])"
-            $Result += "Distance = $($Times[6])"
+                $Result += "Largest common subgraph time = $($Times[4])"
+                $Result += "Largest common subgraph (approximate) time = $($Times[5])"
+                $Result += "Distance = $($Times[6])"
+            }
         }
         elseif (-not $SkipCliques) {
             $Result += "Graph 1 size = $Graph1Size"
             $Result += "BronKerbosch time = $($Times[0])"
             $Result += "Monte Carlo time = $($Times[1])"
 
-            $Result += "Graph 2 size = $Graph2Size"
-            $Result += "BronKerbosch time = $($Times[2])"
-            $Result += "Monte Carlo time = $($Times[3])"
+            if (-not $SkipSecondGraph) {
+                $Result += "Graph 2 size = $Graph2Size"
+                $Result += "BronKerbosch time = $($Times[2])"
+                $Result += "Monte Carlo time = $($Times[3])"
+            }
         }
-        elseif (-not $SkipConnectivity) {
+        elseif (-not $SkipConnectivity -and -not $SkipSecondGraph) {
             $Result += "Graph 1 size = $Graph1Size"
             $Result += "Graph 2 size = $Graph2Size"
 

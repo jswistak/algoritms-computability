@@ -27,37 +27,46 @@ int main() {
     }
     const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
     const int L_CONN = loadIntEnv("L_CONN", 2);
-    int test_cases;
-    cin >> test_cases;
+    int graph_count, test_cases;
+    cin >> graph_count;
+    test_cases = graph_count / 2 + graph_count % 2;
 
     cout << BOLD << "Settings:\n" << RESET;
     cout << "K_CLIQUE = " << K_CLIQUE << "\n";
     cout << "L_CONN = " << L_CONN << "\n";
-    cout << "Number of test cases: " << test_cases << "\n" << endl;
+    cout << "Number of graphs: " << graph_count << "\n" << endl;
 
     for (int test_case = 0; test_case < test_cases; test_case++) {
         cout << BOLD << "-----------------------------Test case " << test_case + 1 << "-----------------------------" << RESET << endl;
+        bool second_graph = graph_count % 2 == 0 || test_case != test_cases - 1;
 
         int matrix1_size, matrix2_size;
+        vector<vector<int>> matrix1, matrix2;
 
         cin >> matrix1_size;
-        vector<vector<int>> matrix1 = readMatrix(matrix1_size);
+        matrix1 = readMatrix(matrix1_size);
 
-        cin >> matrix2_size;
-        vector<vector<int>> matrix2 = readMatrix(matrix2_size);
-
+        if (second_graph) {
+            cin >> matrix2_size;
+            matrix2 = readMatrix(matrix2_size);
+        }
+        
         if (!skip_clique) {
             cout << BOLD << "Graph 1 (N = " << matrix1_size << ") largest clique:" << RESET << endl;
             largestClique(matrix1);
 
-            cout << BOLD << "Graph 2 (N = " << matrix2_size << ") largest clique:" << RESET << endl;
-            largestClique(matrix2);
+            if (second_graph) {
+                cout << BOLD << "Graph 2 (N = " << matrix2_size << ") largest clique:" << RESET << endl;
+                largestClique(matrix2);
+            }
         } else {
             cout << BOLD << "Graph 1 (N = " << matrix1_size << ")" << RESET << endl;
-            cout << BOLD << "Graph 2 (N = " << matrix2_size << ")" << RESET << endl;
+            if (second_graph) {
+                cout << BOLD << "Graph 2 (N = " << matrix2_size << ")" << RESET << endl;
+            }
         }
 
-        if (!skip_conn) {
+        if (!skip_conn && second_graph) {
             cout << BOLD << "L-connectivity:" << RESET << endl;
             LConnectivity(matrix1, matrix2);
         }
