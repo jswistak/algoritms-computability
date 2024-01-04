@@ -6,8 +6,8 @@
     a. Open this folder (where the file you currently read is located) in Windows Explorer
     b. Right click on the address bar in Windows Explorer (bar with text located just above the main panel) and select "Copy address as text"
     c. In PowerShell type 'cd' and press space, then paste the address you copied in the previous step (right click in PowerShell and select "Paste") and press enter
-3. Run the main program with input file examples\1.txt
-    a. In PowerShell type 'Get-Content ..\examples\1.txt | .\main.exe  | Out-Host' and press enter
+3. Run the main program with input files examples\1.txt and examples\2.txt:
+    a. In PowerShell type '.\main.exe  ..\examples\1.txt ..\examples\2.txt | Out-Host' and press enter
     b. You should see the output of the program in PowerShell
-    (c.) Instead of `..\examples\1.txt` you can use any other input file, for example `..\examples\2.txt` or `..\examples\3.txt`
+    (c.) Instead of `..\examples\1.txt` and `..\examples\2.txt` a you can use any other input file, for example `..\examples\3.txt` and `..\examples\4.txt`
     (d.) You can run benchmark script which will run program with all of the provided input files too by typing `.\test.ps1` and pressing enter

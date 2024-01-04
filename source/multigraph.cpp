@@ -21,18 +21,27 @@ void printColoredAdjacencyMatrix(const vector<vector<int>>& matrix, const set<in
     }
 }
 
-vector<vector<int>> readMatrix(int n) {
+vector<vector<int>> readMatrix(ifstream& file, int n) {
     vector<vector<int>> matrix;
     int value;
     for (int i = 0; i < n; i++) {
         vector<int> row;
         for (int j = 0; j < n; j++) {
-            cin >> value;
+            file >> value;
             row.push_back(value);
         }
         matrix.push_back(row);
     }
     return matrix;
+}
+
+void printMatrix(const std::vector<std::vector<int>>& matrix) {
+    for (size_t i = 0; i < matrix.size(); ++i) {
+        for (size_t j = 0; j < matrix[i].size(); ++j) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
 
 vector<vector<int>> reduceAllValuesToOne(vector<vector<int>> multigraph, int k) {
