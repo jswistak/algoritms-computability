@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <utility>
+#include <fstream>
 
 extern std::set<int> biggestCliqueBK;
 ////////////////////////////
@@ -18,7 +19,8 @@ extern std::vector<std::vector<std::pair<int, int>>> largestMappings;
 
 
 void printColoredAdjacencyMatrix(const std::vector<std::vector<int>>& matrix, const std::set<int>& largest_clique, bool colorTheSame = false);
-std::vector<std::vector<int>> readMatrix(int n);
+std::vector<std::vector<int>> readMatrix(std::ifstream& file, int n);
+void printMatrix(const std::vector<std::vector<int>>& matrix);
 std::vector<std::vector<int>> reduceAllValuesToOne(std::vector<std::vector<int>> multigraph, int k = 1);
 bool isClique(std::vector<std::vector<int>>& graph, std::vector<int>& nodes);
 int approximateIterations(const std::vector<std::vector<int>>& graph);

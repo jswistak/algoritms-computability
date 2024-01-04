@@ -7,6 +7,7 @@
 #include <iterator>
 #include <cstdlib>
 #include <chrono>
+#include <fstream>
 
 #include "colors.hpp"
 #include "multigraph.hpp"
@@ -18,55 +19,105 @@ bool loadEnvFlag(const char* env_var_name, bool default_value);
 void largestClique(vector<vector<int>> matrix);
 void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2);
 string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end);
+ifstream loadFile(const char* filename);
 
-int main() {
+int main(int argc, char** argv) {
+
+#pragma region Input files loading
+    if (argc < 2 || argc > 3) {
+        cout << "Usage: " << argv[0] << " <input_file1> [<input_file2>]" << endl;
+        exit(1);
+    }
+
+    const bool two_files = argc == 3;
+    int file1_graph_count, file2_graph_count;
+    ifstream file1, file2;
+    file1 = loadFile(argv[1]);
+
+    file1 >> file1_graph_count;
+    if (two_files) {
+        file2 = loadFile(argv[2]);
+        file2 >> file2_graph_count;
+    } else {
+        file2_graph_count = 0;
+    }
+
+    if (file1.eof() || (two_files && file2.eof())) {
+        cerr << "Error: invalid file format" << endl;
+        exit(1);
+    }
+
+    if (file1_graph_count < 0 || file2_graph_count < 0 || (file1_graph_count == 0 && file2_graph_count == 0)) {
+        cerr << "Error: invalid graph count" << endl;
+        exit(1);
+    }
+#pragma endregion    
+
+#pragma region Environment variables loading
     const bool skip_clique = loadEnvFlag("SKIP_CLIQUE", false);
     const bool skip_conn = loadEnvFlag("SKIP_CONN", false);
     if (skip_clique && skip_conn) {
+        cout << "Nothing to do. Both SKIP_CLIQUE and SKIP_CONN are set to 1.\n";
         return 0;
     }
     const int K_CLIQUE = loadIntEnv("K_CLIQUE", 3);
     const int L_CONN = loadIntEnv("L_CONN", 2);
-    int graph_count, test_cases;
-    cin >> graph_count;
-    test_cases = graph_count / 2 + graph_count % 2;
+#pragma endregion
 
-    cout << BOLD << "Settings:\n" << RESET;
+    int test_cases = max(file1_graph_count, file2_graph_count);
+
+    cout << BOLD << "Setup:\n" << RESET;
     cout << "K_CLIQUE = " << K_CLIQUE << "\n";
     cout << "L_CONN = " << L_CONN << "\n";
-    cout << "Number of graphs: " << graph_count << "\n" << endl;
+    cout << "File 1 graph count = " << file1_graph_count << "\n";
+    cout << "File 2 graph count = " << file2_graph_count << "\n";
+    cout << "Test cases = " << test_cases << "\n\n";
 
     for (int test_case = 0; test_case < test_cases; test_case++) {
         cout << BOLD << "-----------------------------Test case " << test_case + 1 << "-----------------------------" << RESET << endl;
-        bool second_graph = graph_count % 2 == 0 || test_case != test_cases - 1;
+        bool first_graph = test_case < file1_graph_count;
+        bool second_graph = test_case < file2_graph_count;
 
         int matrix1_size, matrix2_size;
         vector<vector<int>> matrix1, matrix2;
 
-        cin >> matrix1_size;
-        matrix1 = readMatrix(matrix1_size);
+        if (first_graph) {
+            file1 >> matrix1_size;
+            matrix1 = readMatrix(file1, matrix1_size);
+            cout << "Adjacency matrix of " << test_case + 1 << " graph from first file:\n";
+            printMatrix(matrix1);
+            cout << endl;
+        }
 
         if (second_graph) {
-            cin >> matrix2_size;
-            matrix2 = readMatrix(matrix2_size);
+            file2 >> matrix2_size;
+            matrix2 = readMatrix(file2, matrix2_size);
+            cout << "Adjacency matrix of " << test_case + 1 << " graph from second file:\n";
+            printMatrix(matrix2);
+            cout << endl;
         }
-        
-        if (!skip_clique) {
-            cout << BOLD << "Graph 1 (N = " << matrix1_size << ") largest clique:" << RESET << endl;
-            largestClique(matrix1);
 
+        if (!skip_clique) {
+            if (first_graph) {
+                cout << BOLD << "Graph 1 (N = " << matrix1_size << ") largest clique:" << RESET << endl;
+                largestClique(matrix1);
+            }
+            
             if (second_graph) {
                 cout << BOLD << "Graph 2 (N = " << matrix2_size << ") largest clique:" << RESET << endl;
                 largestClique(matrix2);
             }
         } else {
-            cout << BOLD << "Graph 1 (N = " << matrix1_size << ")" << RESET << endl;
+            if (first_graph) {
+                cout << BOLD << "Graph 1 (N = " << matrix1_size << ")" << RESET << endl;
+            }
+
             if (second_graph) {
                 cout << BOLD << "Graph 2 (N = " << matrix2_size << ")" << RESET << endl;
             }
         }
 
-        if (!skip_conn && second_graph) {
+        if (!skip_conn && first_graph && second_graph) {
             cout << BOLD << "L-connectivity:" << RESET << endl;
             LConnectivity(matrix1, matrix2);
         }
@@ -182,4 +233,15 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
 std::string periodToString(std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end) {
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     return "[" + std::to_string(duration.count()) + " us] ";
+}
+
+std::ifstream loadFile(const char* filename) {
+    std::ifstream fileStream(filename);
+
+    if (!fileStream.is_open()) {
+        cerr << "Could not open file " << filename << endl;
+        exit(1);
+    }
+
+    return fileStream;
 }
