@@ -167,7 +167,7 @@ void largestClique(vector<vector<int>> matrix) {
     vector<int> largest_clique = monteCarloClique(graph, approximateIterations(graph));
     end = chrono::steady_clock::now();
     std::cout << periodToString(start, end) << "Using Monte Carlo method (size " << BOLD << largest_clique.size() << RESET << "):\n";
-    cout << BLUE;
+    cout << GREEN;
     for (int x : largest_clique) {
         std::cout << x << " ";
     }
@@ -196,7 +196,7 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     auto end = chrono::steady_clock::now();
 
     cout << periodToString(start, end) << "Largest common subgraph (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
-    cout << CYAN;
+    cout << MAGENTA;
     set<int> largestMappingG1;
     vector<pair<int, int>> tmp = getLargestMapping(graph1, graph2);
     for (auto pair : tmp) {
@@ -218,7 +218,7 @@ void LConnectivity(vector<vector<int>> matrix1, vector<vector<int>> matrix2) {
     approxCommonSubgraph(graph1, graph2); //Using DFS on 2 graphs simultaneously
     end = chrono::steady_clock::now();
     cout << periodToString(start, end) << "Largest common subgraph using DFS approximation (size " << BOLD << largestMappings[0].size() << RESET << "):\n";
-    cout << BLUE;
+    cout << GREEN;
     for (auto pair : largestMappings[0]) {
         cout << pair.first << " -> " << pair.second << "\n";
     }
